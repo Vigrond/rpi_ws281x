@@ -168,6 +168,14 @@ def full_white(strip, wait_ms=50, iterations=100):
             strip.setPixelColor(pixel, white)
         strip.show()
         time.sleep(wait_ms/1000.0)
+    for iteration in reversed(range(iterations)):
+        modifier = iteration/float(iterations);
+        value = int(modifier*255)
+        white = Color(value, value, value)
+        for pixel in range(num_pixels):
+            strip.setPixelColor(pixel, white)
+        strip.show()
+        time.sleep(wait_ms/1000.0)
 
 # Main program logic follows:
 if __name__ == '__main__':
