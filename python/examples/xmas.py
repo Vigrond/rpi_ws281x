@@ -159,7 +159,7 @@ def xmas_snake(strip, wait_ms=50, iterations=9):
         strip.show()
         time.sleep(wait_ms/1000.0)
 
-def full_white(strip, wait_ms=50, iterations=20):
+def full_white(strip, wait_ms=50, iterations=100):
     for iteration in range(iterations):
         modifier = iteration/float(iterations);
         value = int(modifier*255)
