@@ -159,8 +159,15 @@ def xmas_snake(strip, wait_ms=50, iterations=9):
         strip.show()
         time.sleep(wait_ms/1000.0)
 
-def full_white(strip, wait_ms=50, iterations=9):
-    
+def full_white(strip, wait_ms=50, iterations=20):
+    for iteration in range(iterations):
+        modifier = iteration/float(iterations);
+        value = int(modifier*255)
+        white = Color(value, value, value)
+        for pixel in range(num_pixels):
+            strip.setPixelColor(pixel, white)
+        strip.show()
+        time.sleep(wait_ms/1000.0)
 
 # Main program logic follows:
 if __name__ == '__main__':
@@ -195,11 +202,12 @@ if __name__ == '__main__':
             #theaterChase(strip, Color(127,   0,   0))  # Red theater chase
             #theaterChase(strip, Color(  0,   0, 127))  # Blue theater chase
             #print ('Rainbow animations.')
-            rainbow(strip)
-            rainbowCycle(strip)
+            #rainbow(strip)
+            #rainbowCycle(strip)
             #theaterChaseRainbow(strip)
             #xmas_snake(strip)
             #xmas_alternate(strip)
+            full_white(strip)
 
     except KeyboardInterrupt:
         if args.clear:
