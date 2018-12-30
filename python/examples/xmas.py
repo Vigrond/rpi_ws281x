@@ -9,18 +9,21 @@ import time
 from neopixel import *
 import argparse
 import numpy as np
+from datetime import datetime
 
 # LED strip configuration:
-LED_COUNT      = 1016      # Number of LED pixels.
+#LED_COUNT      = 1016      # Number of LED pixels.
+LED_COUNT      = 72*4 + 57
+#LED_COUNT = 60
 LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
 #LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
-LED_BRIGHTNESS = 100     # Set to 0 for darkest and 255 for brightest
+LED_BRIGHTNESS = 255    # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
-
+timer_on = False
 
 # Define functions which animate LEDs in various ways.
 def colorWipe(strip, color, wait_ms=50):
@@ -93,25 +96,26 @@ strip.begin()
 
 group1 = []
 group2 = []
-red = (255,0,0)
-green= (0,255,0)
+red = (175,0,0)
+green = (0,255,0)
 blue = (0,0,255)
 purp = (0,50,255)
 grey = (95,95,95)
 orange = (75, 255, 0)
 
-red = green
-green = grey
+#red = green
+#green = grey
 num_pixels = strip.numPixels()
 
+group = 5
 for pixel in range(0, num_pixels):
-    if pixel%10 == 0:
-        first_5 = (pixel for pixel in range(pixel, pixel+5))
-        second_5 = (pixel for pixel in range(pixel+5, pixel+10))
-        for pixel in first_5:
+    if pixel%(group*2) == 0:
+        first = (pixel for pixel in range(pixel, pixel+group))
+        second = (pixel for pixel in range(pixel+group, pixel+group*2))
+        for pixel in first:
             if pixel <= num_pixels:
                 group1.append(pixel)
-        for pixel in second_5:
+        for pixel in second:
             if pixel <= num_pixels:
                 group2.append(pixel)
 
@@ -155,6 +159,8 @@ def xmas_snake(strip, wait_ms=50, iterations=9):
         strip.show()
         time.sleep(wait_ms/1000.0)
 
+def full_white(strip, wait_ms=50, iterations=9):
+    
 
 # Main program logic follows:
 if __name__ == '__main__':
@@ -172,6 +178,14 @@ if __name__ == '__main__':
     try:
 
         while True:
+            now = datetime.now()
+            if timer_on and now.hour >= 2 and now.hour < 18:
+                print ('hour is {}. off schedule.'.format(now.hour))
+                for pixel in range(num_pixels):
+                    strip.setPixelColor(pixel, 0)
+                strip.show()
+                time.sleep(10)
+                continue
             #print ('Color wipe animations.')
             #colorWipe(strip, Color(255, 0, 0))  # Red wipe
             #colorWipe(strip, Color(0, 255, 0))  # Blue wipe
@@ -181,10 +195,10 @@ if __name__ == '__main__':
             #theaterChase(strip, Color(127,   0,   0))  # Red theater chase
             #theaterChase(strip, Color(  0,   0, 127))  # Blue theater chase
             #print ('Rainbow animations.')
-            #rainbow(strip)
-            #rainbowCycle(strip)
+            rainbow(strip)
+            rainbowCycle(strip)
             #theaterChaseRainbow(strip)
-            xmas_snake(strip)
+            #xmas_snake(strip)
             #xmas_alternate(strip)
 
     except KeyboardInterrupt:

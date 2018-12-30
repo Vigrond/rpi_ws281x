@@ -8,9 +8,10 @@
 import time
 from neopixel import *
 import argparse
+import numpy as np
 
 # LED strip configuration:
-LED_COUNT      = 16      # Number of LED pixels.
+LED_COUNT      = 1016      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
 #LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
@@ -78,38 +79,40 @@ def theaterChaseRainbow(strip, wait_ms=50):
             for i in range(0, strip.numPixels(), 3):
                 strip.setPixelColor(i+q, 0)
 
-# Main program logic follows:
-if __name__ == '__main__':
-    # Process arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--clear', action='store_true', help='clear the display on exit')
-    args = parser.parse_args()
+def morph(from_color, to_color, percent):
+    color1 = np.array(from_color)
+    color2 = np.array(to_color)
+    vector = color2 - color1
+    new_color = color1 + vector * (percent/100.0)
+    return new_color.astype(int)
 
-    # Create NeoPixel object with appropriate configuration.
-    strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    # Intialize the library (must be called once before other functions).
-    strip.begin()
+# Create NeoPixel object with appropriate configuration.
+strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+# Intialize the library (must be called once before other functions).
+strip.begin()
 
-    print ('Press Ctrl-C to quit.')
-    if not args.clear:
-        print('Use "-c" argument to clear LEDs on exit')
+group1 = []
+group2 = []
+red = (255,0,0)
+green= (0,255,0)
+blue = (0,0,255)
+purp = (0,50,255)
+grey = (95,95,95)
+orange = (75, 255, 0)
 
-    try:
+#red = green
+#green = grey
+num_pixels = strip.numPixels()
 
-        while True:
-            print ('Color wipe animations.')
-            colorWipe(strip, Color(255, 0, 0))  # Red wipe
-            colorWipe(strip, Color(0, 255, 0))  # Blue wipe
-            colorWipe(strip, Color(0, 0, 255))  # Green wipe
-            print ('Theater chase animations.')
-            theaterChase(strip, Color(127, 127, 127))  # White theater chase
-            theaterChase(strip, Color(127,   0,   0))  # Red theater chase
-            theaterChase(strip, Color(  0,   0, 127))  # Blue theater chase
-            print ('Rainbow animations.')
-            rainbow(strip)
-            rainbowCycle(strip)
-            theaterChaseRainbow(strip)
+for pixel in range(0, num_pixels):
+    if pixel%10 == 0:
+        first_5 = (pixel for pixel in range(pixel, pixel+5))
+        second_5 = (pixel for pixel in range(pixel+5, pixel+10))
+        for pixel in first_5:
+            if pixel <= num_pixels:
+                group1.append(pixel)
+        for pixel in second_5:
+            if pixel <= num_pixels:
+                group2.append(pixel)
 
-    except KeyboardInterrupt:
-        if args.clear:
-            colorWipe(strip, Color(0,0,0), 10)
+de
